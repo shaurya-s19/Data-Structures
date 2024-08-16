@@ -87,6 +87,7 @@ void createNode(int data) {
     printf("----Node Created Successfully----\n");
 }
 
+// Function to reverse a linked list
 void reverse(){
 	struct node *ptr = start;
 	struct node *prev = NULL;
