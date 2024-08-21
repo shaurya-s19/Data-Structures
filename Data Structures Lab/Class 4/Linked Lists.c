@@ -152,7 +152,7 @@ void createNode(struct list_manager *list, int data) {
     printf("----Node Created Successfully----\n");
 }
 
-
+// Seperate function to create a node at the end for merge() function
 void createNodeAtEnd(struct list_manager *list, int data) {
     struct node *ptr = (struct node *)malloc(sizeof(struct node));
     if (ptr == NULL) {
@@ -174,6 +174,83 @@ void createNodeAtEnd(struct list_manager *list, int data) {
         }
         temp->next = ptr;
     }
+}
+
+void deleteNode(struct list_manager *list){
+	struct node *current = list->start;
+	struct node *prev = NULL;
+	
+	if(list->start == NULL){
+		printf("List is empty!");
+		return;
+	}
+	else if (current->next == NULL) {
+		// List has only one node
+		free(current);
+		list->start = NULL;
+		return;
+	    }
+	else {
+		int input;
+		printf("Which node you want to delete?\n1: Beginning\n2: Last\n3: After a Node\n");
+		printf("Enter your choice: ");
+
+		if (scanf("%d", &input) != 1) {
+		    printf("Invalid input. Please enter a number.\n");
+		    while (getchar() != '\n'); // Clear the input buffer
+		    return;
+		}
+
+		while (getchar() != '\n'); // Clear the input buffer
+
+		switch (input) {
+			case 1:
+				list->start = current->next;
+				break;
+			
+			case 2:
+				while(current->next != NULL){
+					prev =  current;
+					current = current->next;
+				}
+				
+				prev->next = NULL;
+				break;
+			
+			case 3:
+				int data;	
+				struct node *next = current->next;
+					
+				printf("Enter data of previous node : \n");
+				if (scanf("%d", &data) != 1) { 
+				    printf("Invalid input. Please enter a number.\n");
+				    while (getchar() != '\n'); // Clear the input buffer
+				    return;
+				}
+		        
+		        	while (getchar() != '\n'); // Clear the input buffer
+				
+				while(current->data != data && current->next != NULL){
+					current = next;
+					next = current->next;
+				}
+				
+				if(current->next == NULL){
+					printf("%d not in list" , data);
+				}
+				else {
+					current->next = next->next;
+				}
+				break;
+					
+			default:
+				// Handle invalid input
+                		printf("Invalid Input!\n");
+                		return;
+		}
+	}
+	
+	printf("---------- Node deleted Successfully -----------\n");
 }
 
 // Function to reverse a linked list
@@ -238,6 +315,34 @@ void merge(struct list_manager *list1 , struct list_manager *list2 , struct list
 	}
 }
 
+void sort(struct list_manager *list) {
+    if (list->start == NULL) return;
+
+    int swapped;
+    struct node *ptr1;
+    struct node *ptr2 = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = list->start;
+
+        while (ptr1->next != ptr2) {
+            if (ptr1->data > ptr1->next->data) {
+                // Swap data
+                int temp = ptr1->data;
+                ptr1->data = ptr1->next->data;
+                ptr1->next->data = temp;
+
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        ptr2 = ptr1; // Mark the end of the sorted portion
+    } while (swapped);
+    
+    printf("---------- List Sorted ----------");
+}
+
 int main() {
     int input;
     bool loop = true;
@@ -246,7 +351,7 @@ int main() {
     while (loop) {
         printf("\nList Management Menu:\n");
         printf("1: Select List (0 to %d)\n", MAX_LISTS - 1);
-        printf("2: Create a node\n3: Traverse & Print\n4: Reverse\n5: Merge Sorted lists\n6: Exit\n");
+        printf("2: Create a node\n3: Traverse & Print\n4: Reverse\n5: Merge Sorted lists\n6: Delete a Node\n7: Sort list\n8: Exit\n");
         printf("Enter your choice: ");
         if (scanf("%d", &input) != 1) {
             printf("Invalid input. Please enter a number.\n");
@@ -295,6 +400,14 @@ int main() {
             	break;
             	
             case 6:
+            	deleteNode(&lists[list_index]);
+            	break;
+            
+            case 7:
+            	sort(&lists[list_index]);
+            	break;
+            	
+            case 8:
                 loop = false;
                 break;
                 
@@ -302,7 +415,7 @@ int main() {
                 printf("Invalid Input\n");
         }
         
-        if (input != 6) { // Check if the user chose to exit
+        if (input != 8) { // Check if the user chose to exit
             char ask;
             printf("Do you want to continue? (y/n): ");
             ask = getchar();
